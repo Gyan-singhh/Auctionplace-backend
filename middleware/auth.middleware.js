@@ -7,7 +7,7 @@ import { ApiError } from "../util/ApiError.js";
 const isAuthenticated = asyncHandler(async (req, res, next) => {
   try {
     const token =
-      (await req.cookies?.accessToken) ||
+      req.cookies.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {

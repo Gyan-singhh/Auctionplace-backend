@@ -37,22 +37,22 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const token = user.generateAccessToken();
   const cookieName = "accessToken";
-  const message = "User Registered sucessfully";
+  const message = "User Registered successfully";
 
-  return res
-    .status(200)
-    .cookie(cookieName, token, {
-      expires: new Date(
-        Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-    })
-    .json({
-      success: true,
-      message,
-      createdUser,
-      token,
-    });
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + (process.env.COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res.status(200).cookie(cookieName, token, cookieOptions).json({
+    success: true,
+    message,
+    createdUser,
+    token,
+  });
 });
 
 const updateUserImage = asyncHandler(async (req, res) => {
@@ -108,37 +108,36 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const token = user.generateAccessToken();
   const cookieName = "accessToken";
-  const message = "User login sucessfully";
-  user.password = "";
+  const message = "User login successfully";
+  user.password = undefined;
 
-  return res
-    .status(200)
-    .cookie(cookieName, token, {
-      expires: new Date(
-        Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-    })
-    .json({
-      success: true,
-      message,
-      user,
-      token,
-    });
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + (process.env.COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res.status(200).cookie(cookieName, token, cookieOptions).json({
+    success: true,
+    message,
+    user,
+    token,
+  });
 });
 
 const logoutUser = asyncHandler(async (req, res, next) => {
-  return res
-    .status(201)
-    .clearCookie("accessToken", "", {
-      httpOnly: true,
-      secure: true,
-      expires: new Date(0),
-    })
-    .json({
-      success: true,
-      message: "Logged Out Successfully.",
-    });
+  res.clearCookie("accessToken", "", {
+    httpOnly: true,
+    secure: true,
+    expires: new Date(0),
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
