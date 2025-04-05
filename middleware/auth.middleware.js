@@ -18,7 +18,7 @@ const isAuthenticated = asyncHandler(async (req, res, next) => {
     const user = await User.findById(decodeToken?._id).select("-password");
 
     if (!user) {
-      return next(new ApiError(401, "Invalid Access Token"));
+      return next(new ApiError(401, "User not found"));
     }
 
     req.user = user;

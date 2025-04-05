@@ -22,7 +22,16 @@ const createProduct = asyncHandler(async (req, res) => {
 
   const userId = req.user?._id;
 
-  if (!title || !description || !price || !category || !height || !length || !width || !weight) {
+  if (
+    !title ||
+    !description ||
+    !price ||
+    !category ||
+    !height ||
+    !length ||
+    !width ||
+    !weight
+  ) {
     throw new ApiError(400, "All fields are required!");
   }
 
@@ -42,7 +51,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
     if (!productImage?.secure_url) {
       throw new ApiError(400, "Image upload failed");
-    }    
+    }
 
     fileData = {
       url: productImage.secure_url,
@@ -78,16 +87,8 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const {
-    title,
-    description,
-    price,
-    category,
-    height,
-    length,
-    width,
-    weight,
-  } = req.body;
+  const { title, description, price, category, height, length, width, weight } =
+    req.body;
   const { id } = req.params;
   const userId = req.user._id;
 
@@ -170,7 +171,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         .destroy(fileData.public_id)
         .catch(console.error);
     }
-    
+
     throw new ApiError(500, "Product updation failed");
   }
 });
@@ -182,7 +183,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     .lean();
 
   if (!products || products.length === 0) {
-    throw new ApiError(404, "No products found");
+    return res.status(200).json(new ApiResponse(200, [], "No products found"));
   }
 
   const productsWithDetails = await Promise.all(
@@ -218,7 +219,7 @@ const getAllProductsofUser = asyncHandler(async (req, res) => {
     .lean();
 
   if (!products || products.length === 0) {
-    throw new ApiError(404, "No products found for this user");
+    return res.status(200).json(new ApiResponse(200, [], "No products found"));
   }
 
   const productsWithPrices = await Promise.all(
@@ -254,7 +255,7 @@ const getWonProducts = asyncHandler(async (req, res) => {
     .lean();
 
   if (!wonProducts || wonProducts.length === 0) {
-    throw new ApiError(404, "No won products found");
+    return res.status(200).json(new ApiResponse(200, [], "No won products found"));
   }
 
   const productsWithPrices = await Promise.all(
@@ -349,7 +350,6 @@ const verifyAndAddCommissionProductByAdmin = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, product, "Product verified successfully"));
 });
-
 
 export {
   createProduct,

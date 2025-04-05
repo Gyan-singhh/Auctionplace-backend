@@ -96,6 +96,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   let user = await User.findOne({ email }).select("+password");
+
   if (!user) {
     throw new ApiError(400, "No account found with this email!");
   }
@@ -158,7 +159,6 @@ const getAllUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, userList, "Users fetched successfully"));
 });
-
 
 const getUserStats = asyncHandler(async (req, res) => {
   const userId = req.user._id;
